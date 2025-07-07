@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leons website review - Click Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a2e 0%, #6a11cb 100%);
+      position: relative;
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="8" fill="black" opacity="0.7"/></svg>') 16 16, auto;
+    }
+    #particles-js {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    .enter-overlay {
+      position: fixed;
+      z-index: 99999;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.98);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: opacity 0.7s cubic-bezier(.77,0,.18,1), transform 0.7s cubic-bezier(.77,0,.18,1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .enter-overlay.hide {
+      opacity: 0;
+      transform: scale(1.2);
+      pointer-events: none;
+    }
+    .enter-text {
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 32px #6a11cb, 0 1px 0 #fff3;
+      background: rgba(30,30,60,0.7);
+      border-radius: 18px;
+      padding: 1.2rem 2.5rem;
+      box-shadow: 0 8px 32px #000a;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+      animation: enter-pulse 1.5s infinite alternate;
+    }
+    .enter-text:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px #6a11cb;
+    }
+    @keyframes enter-pulse {
+      0% { box-shadow: 0 8px 32px #6a11cb; }
+      100% { box-shadow: 0 16px 64px #ffd70055; }
+    }
+    .enter-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      background: url('https://www.e-tony.com/wp-content/uploads/2023/01/bugatti-chiron-pur-sport-purple-1.jpg') center center/cover no-repeat;
+      opacity: 0.13;
+      filter: blur(1.5px) brightness(0.7) saturate(1.2);
+      pointer-events: none;
+    }
+    .container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .title-anim {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 24px #000a, 0 1px 0 #fff3;
+      position: relative;
+      display: inline-block;
+      padding: 0.5rem 2rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: 18px;
+      overflow: visible;
+    }
+    .black-sparks {
+      pointer-events: none;
+      position: absolute;
+      left: 0; top: 0; width: 100%; height: 100%;
+      z-index: 1;
+    }
+    .game-box {
+      background: rgba(30, 30, 60, 0.85);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px #0006;
+      padding: 2rem 2.5rem;
+      margin: 2rem 0;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    .score {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      color: #ffd700;
+      text-shadow: 0 2px 8px #000a;
+    }
+    .click-btn {
+      font-size: 2rem;
+      padding: 1rem 2.5rem;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #ff512f 0%, #dd2476 100%);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 16px #0005;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .click-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px #0007;
+    }
+    .instructions {
+      margin-top: 1rem;
+      color: #fff9;
+      font-size: 1.1rem;
+    }
+    .music-controls {
+      position: fixed;
+      top: 24px;
+      right: 32px;
+      z-index: 10;
+      background: rgba(30,30,60,0.7);
+      border-radius: 50px;
+      padding: 0.5rem 1.2rem;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 8px #0005;
+    }
+    .music-controls label {
+      color: #ffd700;
+      font-size: 1.1rem;
+      margin-right: 0.5rem;
+    }
+    .music-controls input[type=range] {
+      accent-color: #ffd700;
+      width: 100px;
+    }
+    .footer {
+      position: fixed;
+      bottom: 12px;
+      left: 0;
+      width: 100vw;
+      text-align: center;
+      color: #fff8;
+      font-size: 1rem;
+      z-index: 2;
+      letter-spacing: 1px;
+    }
+    .socials {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      margin: 1.5rem 0 0 0;
+      z-index: 3;
+    }
+    .social-icon {
+      font-size: 2.5rem;
+      color: #fff;
+      background: rgba(0,0,0,0.25);
+      border-radius: 16px;
+      padding: 0.3rem 0.7rem;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #0005;
+      cursor: pointer;
+      user-select: none;
+    }
+    .social-icon:hover {
+      color: #ffd700;
+      background: #222;
+      box-shadow: 0 4px 16px #ffd70055;
+    }
+    .copy-toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      color: #ffd700;
+      padding: 1rem 2rem;
+      border-radius: 16px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 4px 24px #000a;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .copy-toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .nuke-popup {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      pointer-events: auto;
+    }
+    .nuke-popup.nuke-in {
+      display: flex;
+      animation: nuke-slide-in 0.7s cubic-bezier(.77,0,.18,1);
+    }
+    .nuke-bg, .nuke-canvas {
+      position: absolute;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 1;
+    }
+    .nuke-frame {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: none;
+      box-shadow: none;
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nuke-embed {
+      margin: 0;
+      padding: 2rem 3rem;
+      border-radius: 18px;
+      background: rgba(30,30,60,0.97);
+      box-shadow: 0 0 32px #ff2222, 0 0 64px #a80000;
+      border: 3px solid;
+      border-image: linear-gradient(270deg, #ff2222, #a80000, #ff2222, #ffd700, #ff2222) 1;
+      position: relative;
+      overflow: hidden;
+      animation: border-move 2.5s linear infinite, nuke-pulse 1.2s infinite alternate;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      min-width: 340px;
+      min-height: 120px;
+      z-index: 20;
+    }
+    @media (max-width: 600px) {
+      .nuke-embed { padding: 1.2rem 0.5rem; min-width: 180px; }
+      .nuke-embed-title { font-size: 1.2rem; }
+    }
+    .nuke-embed-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.3rem;
+      color: #ffd700;
+      text-shadow: 0 0 16px #ff2222, 0 0 32px #fff2;
+      letter-spacing: 2px;
+      font-weight: bold;
+      filter: brightness(1.5);
+      animation: shimmer 2s linear infinite;
+      text-align: center;
+      margin-bottom: 0.7rem;
+    }
+    @keyframes shimmer {
+      0% { color: #ffd700; text-shadow: 0 0 16px #ff2222, 0 0 32px #fff2; }
+      50% { color: #ff2222; text-shadow: 0 0 32px #ffd700, 0 0 64px #fff4; }
+      100% { color: #ffd700; text-shadow: 0 0 16px #ff2222, 0 0 32px #fff2; }
+    }
+    .nuke-sub {
+      font-family: 'Montserrat', monospace;
+      font-size: 1.1rem;
+      color: #fff;
+      text-shadow: 0 0 8px #ff2222, 0 0 16px #fff2;
+      letter-spacing: 1px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    @keyframes nuke-pulse {
+      0% { box-shadow: 0 0 32px #ff2222, 0 0 128px #a80000; transform: scale(1); }
+      100% { box-shadow: 0 0 64px #ff2222, 0 0 192px #a80000; transform: scale(1.04); }
+    }
+    .nuke-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.2rem;
+      color: #ff2222;
+      text-shadow: 0 0 16px #ff2222, 0 0 32px #fff2;
+      letter-spacing: 2px;
+      font-weight: bold;
+      filter: brightness(1.5);
+      animation: nuke-glow 1.2s infinite alternate;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    @keyframes nuke-glow {
+      0% { text-shadow: 0 0 16px #ff2222, 0 0 32px #fff2;}
+      100% { text-shadow: 0 0 32px #ff2222, 0 0 64px #fff4;}
+    }
+    .cursor-trail {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffd700 0%, #000 80%);
+      opacity: 0.7;
+      filter: blur(1px);
+      animation: trail-fade 0.7s forwards;
+    }
+    @keyframes trail-fade {
+      to { opacity: 0; transform: scale(1.7); }
+    }
+    @media (max-width: 600px) {
+      .title-anim { font-size: 1.3rem; padding: 0.3rem 0.7rem; }
+      .game-box { padding: 1rem 0.5rem; }
+      .score { font-size: 2rem; }
+      .click-btn { font-size: 1.2rem; padding: 0.7rem 1.2rem; }
+      .music-controls { right: 8px; top: 8px; padding: 0.3rem 0.7rem; }
+      .social-icon { font-size: 1.5rem; padding: 0.2rem 0.4rem; }
+      .enter-text { font-size: 1.1rem; padding: 0.7rem 1.2rem; }
+    }
+    /* Add a glowing animated border to the title when auto clicker is detected */
+    .title-anim.auto-detect {
+      border: 4px solid;
+      border-radius: 18px;
+      border-image: linear-gradient(270deg, #ff2222, #a80000, #ff2222, #ffd700, #ff2222) 1;
+      box-shadow: 0 0 32px #ff2222, 0 0 64px #a80000;
+      animation: border-move 2.5s linear infinite, nuke-pulse 1.2s infinite alternate;
+      background: rgba(40,0,0,0.85);
+      color: #ffd700 !important;
+      z-index: 200 !important;
+      position: relative;
+      text-shadow: 0 0 16px #ff2222, 0 0 32px #fff, 0 0 8px #000;
+    }
+    @keyframes border-move {
+      0% { border-image-source: linear-gradient(270deg, #ff2222, #a80000, #ff2222, #ffd700, #ff2222); }
+      100% { border-image-source: linear-gradient(630deg, #ffd700, #ff2222, #a80000, #ff2222, #ffd700); }
+    }
+    @keyframes nuke-pulse {
+      0% { box-shadow: 0 0 32px #ff2222, 0 0 128px #a80000; transform: scale(1); }
+      100% { box-shadow: 0 0 64px #ff2222, 0 0 192px #a80000; transform: scale(1.04); }
+    }
+    body.detected, .main-wrapper.detected {
+      border: 6px solid;
+      border-image: linear-gradient(270deg, #ff2222, #a80000, #ff2222, #ffd700, #ff2222) 1;
+      box-shadow: 0 0 64px #ff2222, 0 0 128px #a80000;
+      animation: border-move 2.5s linear infinite, nuke-pulse 1.2s infinite alternate;
+      background: #1a1a2e !important;
+    }
+    /* Red code rain background for detection */
+    #code-rain-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0.95;
+      display: none;
+    }
+    body.detected #code-rain-bg { display: block; }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="enter-overlay" id="enter-overlay">
+    <div class="enter-bg"></div>
+    <div class="enter-text" id="enter-text">click to enter...</div>
+  </div>
+  <div class="music-controls">
+    <label for="music-slider">Music Level</label>
+    <input type="range" id="music-slider" min="0" max="100" value="50">
+  </div>
+  <div class="container" id="main-content" style="opacity:0;pointer-events:none;">
+    <div class="title-anim" id="title-anim">
+      <canvas class="black-sparks" id="black-sparks"></canvas>
+      <span id="title-text"></span>
+    </div>
+    <div class="game-box">
+      <div class="score" id="score">0</div>
+      <button class="click-btn" id="click-btn">Click</button>
+      <div class="instructions">
+        Click the button as many times as you can!<br>
+        Unlock achievements and see your best score.<br>
+        <b>Tip:</b> Try moving your cursor for cool effects!
+      </div>
+      <div id="achievements" style="margin-top:1rem;"></div>
+      <div class="socials">
+        <span class="social-icon" id="spotify-icon" title="Open Spotify"><i class="fab fa-spotify"></i></span>
+        <span class="social-icon" id="discord-icon" title="Copy Discord Username"><i class="fab fa-discord"></i></span>
+        <span class="social-icon" id="tiktok-icon" title="Open TikTok"><i class="fab fa-tiktok"></i></span>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    © 2024 Leons website review | Majestic Game Demo | <a href="#" style="color:#ffd700;text-decoration:underline;">Custom Link</a>
+  </div>
+  <div class="copy-toast" id="copy-toast">Discord username copied!</div>
+  <audio id="bg-music" src="" loop></audio>
+  <div id="nuke-popup" style="display:none;"></div>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    // --- Enter Overlay Logic ---
+    const enterOverlay = document.getElementById('enter-overlay');
+    const mainContent = document.getElementById('main-content');
+    document.getElementById('enter-text').onclick = function() {
+      enterOverlay.classList.add('hide');
+      setTimeout(()=>{
+        enterOverlay.style.display = 'none';
+        mainContent.style.opacity = 1;
+        mainContent.style.pointerEvents = 'auto';
+      }, 700);
+    };
+
+    // --- Title Typing Animation ---
+    const titleText = 'Leons website review';
+    const titleEl = document.getElementById('title-text');
+    let typingIdx = 0, typingDir = 1;
+    function typeAnim() {
+      if (typingDir === 1) {
+        typingIdx++;
+        if (typingIdx > titleText.length) {
+          setTimeout(()=>{ typingDir = -1; typeAnim(); }, 1200);
+          return;
+        }
+      } else {
+        typingIdx--;
+        if (typingIdx < 0) {
+          setTimeout(()=>{ typingDir = 1; typeAnim(); }, 600);
+          return;
+        }
+      }
+      titleEl.textContent = titleText.slice(0, typingIdx);
+      setTimeout(typeAnim, typingDir === 1 ? 90 : 40);
+    }
+    typeAnim();
+
+    // --- Black Sparks Effect ---
+    const sparksCanvas = document.getElementById('black-sparks');
+    function resizeSparks() {
+      sparksCanvas.width = sparksCanvas.offsetWidth;
+      sparksCanvas.height = sparksCanvas.offsetHeight;
+    }
+    window.addEventListener('resize', resizeSparks);
+    setTimeout(resizeSparks, 200);
+    let sparks = Array.from({length: 24}, () => ({
+      x: Math.random(), y: Math.random(), r: Math.random()*2+1, dx: (Math.random()-0.5)*0.5, dy: (Math.random()-0.5)*0.5
+    }));
+    function drawSparks() {
+      const ctx = sparksCanvas.getContext('2d');
+      ctx.clearRect(0,0,sparksCanvas.width,sparksCanvas.height);
+      for (let s of sparks) {
+        ctx.beginPath();
+        ctx.arc(s.x*sparksCanvas.width, s.y*sparksCanvas.height, s.r, 0, 2*Math.PI);
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.shadowColor = '#000';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        s.x += s.dx/60; s.y += s.dy/60;
+        if (s.x<0||s.x>1) s.dx*=-1;
+        if (s.y<0||s.y>1) s.dy*=-1;
+      }
+      requestAnimationFrame(drawSparks);
+    }
+    drawSparks();
+
+    // --- Particles.js Config ---
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {"value": 80, "density": {"enable": true, "value_area": 800}},
+        "color": {"value": ["#ffd700", "#ffffff", "#6a11cb", "#2575fc"]},
+        "shape": {"type": "circle"},
+        "opacity": {"value": 0.7, "random": true},
+        "size": {"value": 5, "random": true},
+        "line_linked": {"enable": true, "distance": 150, "color": "#fff", "opacity": 0.2, "width": 1},
+        "move": {"enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out"}
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {"onhover": {"enable": true, "mode": "repulse"}, "onclick": {"enable": true, "mode": "push"}},
+        "modes": {"repulse": {"distance": 100, "duration": 0.4}, "push": {"particles_nb": 4}}
+      },
+      "retina_detect": true
+    });
+
+    // --- Game Logic ---
+    let score = 0;
+    let bestScore = localStorage.getItem('majestic_best_score') || 0;
+    const scoreEl = document.getElementById('score');
+    const btn = document.getElementById('click-btn');
+    const achievementsEl = document.getElementById('achievements');
+    const achievements = [
+      {score: 10, text: '🌟 Novice Clicker'},
+      {score: 50, text: '💎 Pro Clicker'},
+      {score: 100, text: '👑 Majestic Clicker'},
+      {score: 250, text: '🚀 Click Master'},
+      {score: 500, text: '🦄 Legendary Clicker'}
+    ];
+    let unlocked = [];
+    // Auto clicker detection
+    let clickTimes = [];
+    function updateScore() {
+      scoreEl.textContent = score;
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('majestic_best_score', bestScore);
+      }
+      let ach = achievements.filter(a => score >= a.score && !unlocked.includes(a.text));
+      ach.forEach(a => {
+        unlocked.push(a.text);
+        showAchievement(a.text);
+      });
+      achievementsEl.innerHTML = `<b>Best Score:</b> ${bestScore}<br>` + unlocked.map(a => `<span>${a}</span>`).join(' ');
+    }
+    function showAchievement(text) {
+      let div = document.createElement('div');
+      div.textContent = `Achievement Unlocked: ${text}`;
+      div.style = 'background:#ffd700;color:#222;padding:8px 16px;border-radius:12px;margin:8px 0;font-weight:bold;box-shadow:0 2px 8px #0005;';
+      achievementsEl.appendChild(div);
+      setTimeout(()=>div.remove(), 2500);
+    }
+    function showNukePopup() {
+      // Change the main title to 'Auto Clicker Detected' and add the border
+      const titleAnim = document.getElementById('title-anim');
+      const titleText = document.getElementById('title-text');
+      titleAnim.classList.add('auto-detect');
+      titleText.textContent = 'Auto Clicker Detected';
+      // Add red border and code rain to the whole site
+      document.body.classList.add('detected');
+      // Lock the game: disable the click button and all controls
+      document.getElementById('click-btn').disabled = true;
+      document.getElementById('click-btn').style.opacity = 0.5;
+      document.getElementById('click-btn').style.pointerEvents = 'none';
+      // Start code rain background
+      startCodeRainBg();
+    }
+    function startCodeRainBg() {
+      let canvas = document.getElementById('code-rain-bg');
+      if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'code-rain-bg';
+        document.body.appendChild(canvas);
+      }
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const ctx = canvas.getContext('2d');
+      const cols = Math.floor(canvas.width / 20);
+      const drops = Array(cols).fill(1);
+      function draw() {
+        ctx.fillStyle = 'rgba(40,0,0,0.18)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '18px monospace';
+        ctx.fillStyle = '#ff2222';
+        for (let i = 0; i < drops.length; i++) {
+          const text = Math.random() > 0.5 ? '0' : '1';
+          ctx.fillText(text, i * 20, drops[i] * 20);
+          if (Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+          if (drops[i] * 20 > canvas.height) drops[i] = 0;
+        }
+      }
+      function animate() {
+        draw();
+        if (document.body.classList.contains('detected')) {
+          requestAnimationFrame(animate);
+        }
+      }
+      animate();
+    }
+    btn.addEventListener('click', () => {
+      // Auto clicker detection
+      const now = Date.now();
+      clickTimes.push(now);
+      clickTimes = clickTimes.filter(t => now - t < 1000);
+      if (clickTimes.length > 15) { // Increased threshold to 15 clicks/sec
+        showNukePopup();
+        clickTimes = [];
+        return;
+      }
+      score++;
+      updateScore();
+      btn.style.transform = 'scale(1.08)';
+      setTimeout(()=>btn.style.transform='', 100);
+    });
+    // Reset on reload
+    window.onload = () => {
+      score = 0;
+      unlocked = [];
+      updateScore();
+    };
+
+    // --- Music Controls ---
+    const music = document.getElementById('bg-music');
+    const musicSlider = document.getElementById('music-slider');
+    music.volume = 0.5;
+    musicSlider.value = 50;
+    musicSlider.oninput = () => {
+      music.volume = musicSlider.value / 100;
+    };
+    // (Music file to be added later)
+
+    // --- Social Icons ---
+    document.getElementById('spotify-icon').onclick = () => {
+      window.open('https://open.spotify.com/user/314bywyytbhp7tew4xy4y6mjzm7m', '_blank');
+    };
+    document.getElementById('tiktok-icon').onclick = () => {
+      window.open('https://www.tiktok.com/@young.money.abi?lang=en', '_blank');
+    };
+    document.getElementById('discord-icon').onclick = () => {
+      navigator.clipboard.writeText('leon2354718');
+      const toast = document.getElementById('copy-toast');
+      toast.classList.add('show');
+      toast.textContent = 'Discord username copied!';
+      setTimeout(()=>toast.classList.remove('show'), 1800);
+    };
+
+    // --- Cursor Trail Effect ---
+    document.addEventListener('mousemove', e => {
+      let trail = document.createElement('div');
+      trail.className = 'cursor-trail';
+      trail.style.left = (e.clientX-9)+'px';
+      trail.style.top = (e.clientY-9)+'px';
+      document.body.appendChild(trail);
+      setTimeout(()=>trail.remove(), 700);
+    });
+  </script>
+</body>
+</html> 
